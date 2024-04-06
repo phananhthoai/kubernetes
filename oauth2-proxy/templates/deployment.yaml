@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oauth2-proxy.fullname" . }}
+  labels:
+    {{- include "oauth2-proxy.labels" . | nindent 4 }}
+    app.kubernetes.io/component: oauth2
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "oauth2-proxy.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: oauth2
+  template:
+    metadata:
+      labels:
+        {{- include "oauth2-proxy.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: oauth2
+    spec:
+      imagePullSecrets:
+        - name: {{ include "oauth2-proxy.fullname" . }}-registry
+      containers:
+        - name: {{ include "oauth2-proxy.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          args:
+            - --http-address=0.0.0.0:8080
+            - --whitelist-domain=.hellking.dev
+            - --provider=oidc
+            - --cookie-domain=.hellking.dev
+            - --email-domain=*
+            - --cookie-secret=y0ur_s3cr3t_v3ry_l0ngggg
+            - --client-id=oauth-proxy
+            - --client-secret=zerZx6Y0uadsBXOZs3nt35WbrzhrnDvN
+            - --oidc-issuer-url=https://keycloak.hellking.dev/realms/master
+            - --redirect-url=https://auth.hellking.dev/oauth2/callback
+            - --session-store-type=redis
+            - --redis-connection-url=redis://:0jqqN5J7s4@redis-master-0.redis-headless:6379
+            - --redis-connection-idle-timeout=14

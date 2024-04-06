@@ -1,0 +1,7 @@
+fullnameOverride: keycloak
+replicaCount: 1
+image:
+  repository: harbor.elofun.net/devops/keycloak
+  pullPolicy: IfNotPresent
+  tag: "0.0.1"
+domain: keycloak.hellking.dev

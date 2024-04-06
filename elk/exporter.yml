@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: exporter
+  name: exporter
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: exporter
+  template:
+    metadata:
+      labels:
+        app: exporter
+    spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: exporter
+        ports:
+        - containerPort: 5044
+          hostPort: 5044
+          name: beats
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /etc/nginx
+          name: config
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: exporter-config
+        name: config
+

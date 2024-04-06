@@ -1,0 +1,88 @@
+replicas: 1
+persistence:
+  enabled: true
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    xpack.monitoring.enabled: false
+logstashPipeline:
+  logstash.conf: |
+    input {
+      udp {
+        port => 5044
+      }
+    }
+    filter {
+      mutate {
+         remove_field => ["event", "host", "@timestamp"]
+      }
+      json {
+        source => "message"
+        target => "[@metadata][parsed_message]"
+        remove_field => [ "message" ]
+      }
+      date {
+        match => ["[@metadata][parsed_message][@timestamp]", "ISO8601"]
+      }
+      mutate {
+        copy => {
+          "[@metadata][parsed_message][message]" => "[@metadata][data]"
+          "[@metadata][parsed_message][category]" => "category"
+          "[@metadata][parsed_message][level]" => "level"
+          "[@metadata][parsed_message][host]" => "host"
+        } 
+      }
+      if [@metadata][data] =~ "\A\{.+\}\z" {
+        json {
+          source => "[@metadata][data]"
+          target => "[@metadata][parsed_nested_message]"
+        }
+        mutate {
+          copy => {
+            "[@metadata][parsed_nested_message]" => "[@metadata][data]"
+          }
+        }
+      }
+      mutate {
+        copy => {
+          "[@metadata][data]" => "data"
+        }
+        rename => {
+          "[@metadata][data][duration]" => "duration"
+          "[@metadata][data][traceId]" => "traceId"
+          "[@metadata][data][requestId]" => "requestId"
+        }
+      }
+    }
+    output {
+      stdout {}
+      elasticsearch {
+        hosts => ["https://elasticsearch-master:9200"]
+        user => '${ELASTICSEARCH_USERNAME}'
+        cacert => '/usr/share/logstash/config/certs/ca.crt'
+        password => '${ELASTICSEARCH_PASSWORD}'
+        index => "logstash-beats"
+      }
+    }
+extraEnvs:
+  - name: "ELASTICSEARCH_USERNAME"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: username
+  - name: "ELASTICSEARCH_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: password
+secretMounts: 
+  - name: elasticsearch-master-certs
+    secretName: elasticsearch-master-certs
+    path: /usr/share/logstash/config/certs
+service:
+  type: ClusterIP
+  ports:
+    - name: beats
+      port: 5044
+      protocol: UDP
+      targetPort: 5044

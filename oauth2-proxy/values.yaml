@@ -1,0 +1,6 @@
+fullnameOverride: oauth2-proxy
+replicaCount: 1
+image:
+  repository: harbor.elofun.net/devops/oauth-proxy
+  pullPolicy: IfNotPresent
+  tag: "latest"

@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  nginx.conf: |
+    worker_processes auto;
+
+    events {
+      worker_connections 512;
+    }
+
+    stream {
+      log_format basic '$remote_addr [$time_local] '
+                       '$protocol $status $bytes_sent $bytes_received '
+                       '$session_time';
+
+      server {
+        listen 5044 udp;
+        proxy_pass logstash-logstash.elk-system.svc.cluster.local:5044;
+        proxy_responses 0;
+        access_log /dev/stdout basic;
+      }
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    app: exporter
+  name: exporter-config
+  namespace: default

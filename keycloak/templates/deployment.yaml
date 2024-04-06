@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  labels:
+    {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "keycloak.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "keycloak.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: keycloak
+    spec:
+      imagePullSecrets:
+        - name: {{ include "keycloak.fullname" . }}-registry
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KEYCLOAK_ADMIN
+              value: admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: Elofun@2020
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP  
+          command:
+            - /opt/keycloak/bin/kc.sh 
+            - start-dev 
+            - --proxy=edge 
+            - --db=postgres 
+            - --db-url-host=postgres-postgresql
+            - --db-username=keycloak 
+            - --db-password=Elofun@2020
+            - --db-url-database=keycloak

@@ -1,0 +1,14 @@
+replicas: 1
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: kibana.hellking.dev
+      paths:
+        - path: /
+  tls:
+     - secretName: kibana-tls
+       hosts:
+         - kibana.hellking.dev

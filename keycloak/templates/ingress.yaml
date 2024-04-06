@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "keycloak.fullname" . }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  labels:
+    {{- include "keycloak.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: {{ .Values.domain}}
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: {{ include "keycloak.fullname" . }}
+            port:
+              name: http
+        pathType: Prefix
+  tls:
+  - hosts:
+    - {{ .Values.domain }}
+    secretName: tls-{{ include "keycloak.fullname" . }}-ingress
