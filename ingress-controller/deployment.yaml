@@ -66,9 +66,11 @@ spec:
         - containerPort: 80
           name: http
           protocol: TCP
+          hostPort: 80
         - containerPort: 443
           name: https
           protocol: TCP
+          hostPort: 443
         - containerPort: 8443
           name: webhook
           protocol: TCP
