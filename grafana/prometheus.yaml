@@ -747,7 +747,9 @@ serverFiles:
         static_configs:
           - targets:
             - localhost:9090
-
+      - job_name: 'win-exporter'
+        static_configs:
+          - targets: ['192.168.2.101:9182'] 
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
       # and services to allow each to use different authentication configs.
@@ -1104,7 +1106,7 @@ serverFiles:
       # * `prometheus.io/scheme`: If the metrics endpoint is secured then you will need
       # to set this to `https` & most likely set the `tls_config` of the scrape config.
       # * `prometheus.io/path`: If the metrics path is not `/metrics` override this.
-      # * `prometheus.io/port`: Scrape the pod on the indicated port instead of the default of `9102`.
+      # * `prometheus.io/port`: Scrape the pod on the indicated port instead of the default of `9102`.      
       - job_name: 'kubernetes-pods-slow'
         honor_labels: true
 
