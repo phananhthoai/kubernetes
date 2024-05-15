@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-wsgw
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: wsgw
+spec:
+  selector:
+    matchLabels:
+      {{- include "greatbunny.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: wsgw
+  template:
+    metadata:
+      labels:
+        {{- include "greatbunny.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: wsgw
+    spec:
+      imagePullSecrets:
+        - name: {{ include "greatbunny.fullname" . }}-registry
+      containers:
+        - name: wsgw
+          {{- if .Values.wsgw.tag }}
+          image: {{ .Values.wsgw.image }}:{{ .Values.wsgw.tag }}
+          {{- else }}
+          image: {{ .Values.wsgw.image }}
+          {{- end }}
+          env:
+            - name: ELOFUN_NATS_URI
+              value: nats://greatbunny-nats.greatbunny.svc.cluster.local:4222
+            - name: CLIENT_ID
+              value: emoney
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP

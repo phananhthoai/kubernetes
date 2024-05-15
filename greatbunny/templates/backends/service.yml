@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-backends
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: backends
+spec:
+  type: ClusterIP
+  ports:
+    - name: restapi
+      port: 80
+      targetPort: restapi
+      protocol: TCP
+  selector:
+    {{- include "greatbunny.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backends

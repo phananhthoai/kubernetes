@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-backends
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backends
+spec:
+  selector:
+    matchLabels:
+      {{- include "greatbunny.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backends
+  template:
+    metadata:
+      labels:
+        {{- include "greatbunny.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backends
+      annotations:
+        checksum/configuration: {{ include (print $.Template.BasePath "/backends/cm.yml") . | sha256sum }}
+    spec:
+      imagePullSecrets:
+        - name: {{ include "greatbunny.fullname" . }}-registry
+      initContainers:
+        {{- if not .Values.common.secret_name }}
+        - name: wait-database
+          image: {{ .Values.common.waitReady.image }}:{{ .Values.common.waitReady.tag | default "latest" }}
+          env:
+            - name: SERVICE
+              value: "{{ include "greatbunny.fullname" . }}-postgres-postgresql"
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: PORT
+              value: "5432"
+        {{- end }}
+        - name: wait-nats
+          image: {{ .Values.common.waitReady.image }}:{{ .Values.common.waitReady.tag | default "latest" }}
+          env:
+            - name: SERVICE
+              value: {{ include "greatbunny.fullname" . }}-nats
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: PORT
+              value: "4222"
+      containers:
+        - name: backends
+          {{- if .Values.backends.tag }}
+          image: {{ .Values.backends.image }}:{{ .Values.backends.tag }}
+          {{- else }}
+          image: {{ .Values.backends.image }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "greatbunny.fullname" . }}-backends
+          ports:
+            - name: restapi
+              containerPort: 80
+              protocol: TCP

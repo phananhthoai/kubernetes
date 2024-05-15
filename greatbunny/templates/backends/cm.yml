@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-backends
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: configmap
+data:
+
+# ENV SERVICES
+
+  DATABASE_PROVIDER: "mysql"
+  DATABASE_URL: {{ .Values.common.db_url }}  
+  REDIS_HOST: {{ .Values.common.redis_host }}
+  REDIS_PORT: {{ .Values.common.redis_port | quote }}
+  REDIS_PASSWORD: {{ .Values.common.redis_password }}
+  REDIS_PREFIX: {{ .Values.common.redis_prefix }}
+  ELOFUN_NATS_URI: nats://greatbunny-nats.greatbunny.svc.cluster.local:4222
+  WEB_URL: {{ .Values.common.webUrl }}
+  DEV_WEB_URL: {{ .Values.common.webUrl }}
+  ALLOW_ANONYMOUS: "true"
+  DEBUG_LOG: "true"
+  STAGE: {{ .Values.common.stage }}
+  #DB_CONNECTION_LIMIT: "100"
+  #DB_MAX_STATEMENT_TIME: "20"
+  #DB_WAIT_TIMEOUT: "600"
+  #DB_INTERACTIVE_TIMEOUT: "600"
+  #DB_POOL_TIMEOUT: "10"
+  #DB_CONNECT_TIMEOUT: "20"
+  #ALLOW_ANONYMOUS: "1"

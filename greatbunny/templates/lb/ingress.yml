@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: lb    
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.lb.domain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ include "greatbunny.fullname" . }}-lb
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+      - {{ .Values.lb.domain }}
+      secretName: tls-{{ include "greatbunny.fullname" . }}-ingress

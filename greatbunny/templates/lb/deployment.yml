@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-lb
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: lb
+spec:  
+  selector:
+    matchLabels:
+      {{- include "greatbunny.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: lb
+  template:
+    metadata:
+      labels:
+        {{- include "greatbunny.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: lb
+      annotations:
+        checksum/configuration: {{ include (print $.Template.BasePath "/lb/cm.yml") . | sha256sum }}
+    spec:
+      imagePullSecrets:
+        - name: {{ include "greatbunny.fullname" . }}-registry
+      containers:
+        - name: lb
+          {{- if .Values.lb.tag }}
+          image: {{ .Values.lb.image }}:{{ .Values.lb.tag }}
+          {{- else }}
+          image: {{ .Values.lb.image }}
+          {{- end }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+              name: http
+          volumeMounts:
+            - mountPath: /etc/nginx
+              name: config
+      volumes:        
+        - configMap:
+            name: {{ include "greatbunny.fullname" . }}-lb
+          name: config

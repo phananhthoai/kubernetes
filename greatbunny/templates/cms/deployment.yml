@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-cms
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cms
+spec:
+  selector:
+    matchLabels:
+      {{- include "greatbunny.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: cms
+  template:
+    metadata:
+      labels:
+        {{- include "greatbunny.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: cms
+    spec:
+      imagePullSecrets:
+        - name: {{ include "greatbunny.fullname" . }}-registry
+      containers:
+        - name: cms
+          {{- if .Values.cms.tag }}
+          image: {{ .Values.cms.image }}:{{ .Values.cms.tag }}
+          {{- else }}
+          image: {{ .Values.cms.image }}
+          {{- end }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP

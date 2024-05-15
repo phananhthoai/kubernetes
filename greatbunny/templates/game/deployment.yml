@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greatbunny.fullname" . }}-game
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "greatbunny.labels" . | nindent 4 }}
+    app.kubernetes.io/component: game
+spec:
+  selector:
+    matchLabels:
+      {{- include "greatbunny.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: game
+  template:
+    metadata:
+      labels:
+        {{- include "greatbunny.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: game
+    spec:
+      imagePullSecrets:
+        - name: {{ include "greatbunny.fullname" . }}-registry
+      containers:
+        - name: game
+          {{- if .Values.game.tag }}
+          image: {{ .Values.game.image }}:{{ .Values.game.tag }}
+          {{- else }}
+          image: {{ .Values.game.image }}
+          {{- end }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: http
+          readinessProbe:
+            httpGet:
+              port: http

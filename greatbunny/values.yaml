@@ -1,0 +1,64 @@
+fullnameOverride: greatbunny
+common:
+  clusterDomain: cluster.local
+  registrySecret: eyJhdXRocyI6eyJoYXJib3IuaGVsbGtpbmcuZGV2Ijp7InVzZXJuYW1lIjoicm9ib3QkZGV2ZWxvcCIsInBhc3N3b3JkIjoiTjNZTkZJOVIxR0hBRnc0SmFyYXNGbG0xQllEMmlrZGEiLCJhdXRoIjoiY205aWIzUWtaR1YyWld4dmNEcE9NMWxPUmtrNVVqRkhTRUZHZHpSS1lYSmhjMFpzYlRGQ1dVUXlhV3RrWVE9PSJ9fX0=
+  #secret_name: ""
+  db_url: postgresql://elofun:elofun@greatbunny-postgres-postgresql.greatbunny.svc.cluster.local:5432/greatbunny
+  redis_host: greatbunny-redis-master.greatbunny.svc.cluster.local
+  redis_port: 6379
+  redis_password: LXL7W1bNUG
+  redis_prefix: elofun
+  stage: dev
+  webUrl: https://emoney.hellking.dev/  
+  waitReady:
+    image: harbor.hellking.dev/library/wait-for-port
+    tag: 0.0.1
+  
+nats:
+  image: nats:alpine
+  replicaCount: 3
+game:
+  image: harbor.hellking.dev/emoney/game
+  tag: 0.0.1
+cms:
+  image: harbor.hellking.dev/emoney/cms
+  tag: 0.0.1
+backends:
+  image: harbor.hellking.dev/emoney/backends
+  tag: 0.0.1
+wsgw:
+  image: harbor.hellking.dev/emoney/wsgw
+  tag: 0.0.1
+
+lb:
+  domain: emoney.hellking.dev
+  image: nginx
+  tag: latest
+postgres:
+  architecture: standalone
+  global:
+    storageClass: cstor-csi-disk    
+  auth:
+    postgresPassword: "elofun"
+    username: "elofun"
+    password: "elofun"
+    database: "greatbunny"
+    replicationPassword: elofun
+redis:
+  global:
+    storageClass: cstor-csi-disk 
+  replica:
+    replicaCount: 0
+  persistence:   
+    size: 1Gi
+  volumePermissions:
+    enabled: true
+nats:
+  auth:
+    enabled: false
+  replicaCount: 1
+  cluster:
+    name: greatbunny
+  containerPorts:
+    cluster: 6222
+    monitoring: 8222
