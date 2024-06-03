@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "youtrack.fullname" . }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  labels:
+    {{- include "youtrack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: youtrack
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: {{ .Values.domain}}
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: {{ include "youtrack.fullname" . }}
+            port:
+              name: http
+        pathType: Prefix
+  tls:
+  - hosts:
+    - {{ .Values.domain }}
+    secretName: tls-{{ include "youtrack.fullname" . }}-ingress

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "youtrack.fullname" . }}  
+  labels:
+    {{- include "youtrack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: youtrack
+spec:
+  serviceName: {{ include "youtrack.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "youtrack.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: youtrack
+  template:
+    metadata:     
+      labels:
+        {{- include "youtrack.labels" . | nindent 8 }}
+        app.kubernetes.io/component: youtrack
+    spec:      
+      containers:
+        - name: {{ .Chart.Name }}          
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP          
+          volumeMounts:
+            - name: opt-youtrack-data
+              mountPath: /opt/youtrack/data
+            - name: opt-youtrack-conf
+              mountPath: /opt/youtrack/conf
+            - name: opt-youtrack-logs
+              mountPath: /opt/youtrack/logs
+            - name: opt-youtrack-backups
+              mountPath: /opt/youtrack/backups
+      volumes:
+        - name: opt-youtrack-data
+          hostPath:
+            path: /mnt/worker1
+            type: DirectoryOrCreate
+        - name: opt-youtrack-conf
+          hostPath:
+            path: /mnt/worker2
+            type: DirectoryOrCreate
+        - name: opt-youtrack-logs
+          hostPath:
+            path: /mnt/worker2
+            type: DirectoryOrCreate
+        - name: opt-youtrack-backups
+          hostPath:
+            path: /mnt/worker1
+            type: DirectoryOrCreate
+

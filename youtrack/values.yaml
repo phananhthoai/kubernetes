@@ -1,0 +1,7 @@
+fullnameOverride: youtrack
+replicaCount: 1
+image:
+  repository: jetbrains/youtrack
+  pullPolicy: IfNotPresent
+  tag: "2024.1.32323"
+domain: youtrack.hellking.dev

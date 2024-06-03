@@ -9,15 +9,15 @@ spec:
         kubernetes.io/hostname: "master"
      dataRaidGroups:
       - blockDevices:
-          - blockDeviceName: "blockdevice-38fdf0725204ff366dfd7f441c4a1f4e"
+          - blockDeviceName: "sparse-a67ba23bfaa2ad15157d33eb4b9deb4d"
      poolConfig:
         dataRaidGroupType: "stripe"
-        
+
    - nodeSelector:
        kubernetes.io/hostname: "worker-1"
      dataRaidGroups:
        - blockDevices:
-           - blockDeviceName: "blockdevice-5162f6f8205f59601edd344752e286c5"
+           - blockDeviceName: "sparse-3dd89a3dee3cda50a890f0e7bc20513d"
      poolConfig:
        dataRaidGroupType: "stripe"
 
@@ -25,6 +25,6 @@ spec:
        kubernetes.io/hostname: "worker-2"
      dataRaidGroups:
        - blockDevices:
-           - blockDeviceName: "blockdevice-03c6725f41e5156dfc1b05175ec97d1a"
+           - blockDeviceName: "sparse-2f75b0b736510af9414b285198f7472c"
      poolConfig:
        dataRaidGroupType: "stripe"
