@@ -38,5 +38,5 @@ spec:
             - --oidc-issuer-url=https://keycloak.hellking.dev/realms/master
             - --redirect-url=https://auth.hellking.dev/oauth2/callback
             - --session-store-type=redis
-            - --redis-connection-url=redis://:TNDQzeO94G@redis-master-0.redis-headless:6379
+            - --redis-connection-url=redis://:BOcRpPos23@redis-master-0.redis-headless:6379
             - --redis-connection-idle-timeout=14

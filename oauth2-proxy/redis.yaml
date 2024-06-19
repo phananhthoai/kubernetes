@@ -19,7 +19,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  storageClass: "cstor-csi-disk"
+  storageClass: "rook-ceph-block"
   redis:
     password: ""
   ## Compatibility adaptations for Kubernetes platforms

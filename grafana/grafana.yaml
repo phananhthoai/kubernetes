@@ -338,7 +338,7 @@ extraContainerVolumes: []
 persistence:
   type: pvc
   enabled: true
-  storageClassName: cstor-csi-disk
+  storageClassName: rook-ceph-block
   accessModes:
     - ReadWriteOnce
   size: 10Gi

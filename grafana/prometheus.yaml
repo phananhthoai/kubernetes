@@ -464,7 +464,7 @@ server:
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
     ##
-    storageClass: "cstor-csi-disk"
+    storageClass: "rook-ceph-block"
 
     ## Prometheus server data Persistent Volume Binding Mode
     ## If defined, volumeBindingMode: <volumeBindingMode>
@@ -743,6 +743,11 @@ serverFiles:
       - /etc/config/alerts
 
     scrape_configs:
+      - job_name: 'rook-ceph-mgrs'
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            - rook-ceph-mgr.rook-ceph.svc.cluster.local:9283
       - job_name: prometheus
         static_configs:
           - targets:
@@ -893,6 +898,7 @@ serverFiles:
       # service then set this appropriately.
       # * `prometheus.io/param_<parameter>`: If the metrics endpoint uses parameters
       # then you can set any parameter
+      
       - job_name: 'kubernetes-service-endpoints'
         honor_labels: true
 
@@ -1210,7 +1216,7 @@ alertmanager:
   enabled: true
 
   persistence:
-    storageClass: "cstor-csi-disk"
+    storageClass: "rook-ceph-block"
     size: 2Gi
 
   podSecurityContext:
