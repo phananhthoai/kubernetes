@@ -129,7 +129,7 @@ cephClusterSpec:
   mon:
     # Set the number of mons to be started. Generally recommended to be 3.
     # For highest availability, an odd number of mons should be specified.
-    count: 6
+    count: 3
     # The mons should be on unique nodes. For production, at least 3 nodes are recommended for this reason.
     # Mons should only be allowed on the same node for test environments where data loss is acceptable.
     allowMultiplePerNode: false
@@ -138,7 +138,7 @@ cephClusterSpec:
     # When higher availability of the mgr is needed, increase the count to 2.
     # In that case, one mgr will be active and one in standby. When Ceph updates which
     # mgr is active, Rook will update the mgr services to match the active mgr.
-    count: 4
+    count: 2
     allowMultiplePerNode: false
     modules:
       # List of modules to optionally enable or disable.
@@ -432,7 +432,7 @@ ingress:
     tls:
      - hosts:
          - rook.hellking.dev
-       secretName: ingress-tls-rool
+       secretName: ingress-tls-rook
     ## Note: Only one of ingress class annotation or the `ingressClassName:` can be used at a time
     ## to set the ingress class
     ingressClassName: nginx
@@ -445,7 +445,7 @@ cephBlockPools:
     spec:
       failureDomain: host
       replicated:
-        size: 5
+        size: 3
       # Enables collecting RBD per-image IO statistics by enabling dynamic OSD performance counters. Defaults to false.
       # For reference: https://docs.ceph.com/docs/latest/mgr/prometheus/#rbd-io-statistics
       # enableRBDStats: true
@@ -508,11 +508,11 @@ cephFileSystems:
     spec:
       metadataPool:
         replicated:
-          size: 5
+          size: 3
       dataPools:
         - failureDomain: host
           replicated:
-            size: 5
+            size: 3
           # Optional and highly recommended, 'data0' by default, see https://github.com/rook/rook/blob/master/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#pools
           name: data0
       metadataServer:
@@ -582,7 +582,7 @@ cephObjectStores:
       metadataPool:
         failureDomain: host
         replicated:
-          size: 5
+          size: 3
       dataPool:
         failureDomain: host
         erasureCoded:

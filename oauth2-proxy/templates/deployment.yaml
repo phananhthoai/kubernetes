@@ -34,9 +34,9 @@ spec:
             - --email-domain=*
             - --cookie-secret=y0ur_s3cr3t_v3ry_l0ngggg
             - --client-id=oauth-proxy
-            - --client-secret=22F0lclRWWPCQIIJFUUp4gJ3WIuqSGW8
+            - --client-secret=zpyK9eg6aoEuyNICPY2ngRrmNve87NCx
             - --oidc-issuer-url=https://keycloak.hellking.dev/realms/master
             - --redirect-url=https://auth.hellking.dev/oauth2/callback
             - --session-store-type=redis
-            - --redis-connection-url=redis://:BOcRpPos23@redis-master-0.redis-headless:6379
+            - --redis-connection-url=redis://:SJVIXGFeId@redis-master-0.redis-headless:6379
             - --redis-connection-idle-timeout=14
